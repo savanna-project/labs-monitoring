@@ -1,0 +1,95 @@
+######################################
+# Do any local nrpe configuration here
+######################################
+allowed_hosts=<%= @monitor_ip %>
+dont_blame_nrpe=<%= @send_args %>
+<%# Parameter 'node_type' defines type of node: 0 - devstack-single node, 1 - controller, 2 - compute, 3 - cinder, 2-3 - compute+cinder %>
+command[check_disk_openstack]=/usr/<%= @plugins_dir %>/nagios/plugins/check_disk -w 10% -c 5%
+<% if @node_type == "0" -%>
+command[check_load_openstack]=/usr/<%= @plugins_dir %>/nagios/plugins/check_load -w 100,95,80 -c 200,180,170
+<% if ! @disable_services.include?("horizon") -%>
+command[check_horizon]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -u <%= @url %> -R "Log In"
+<% end -%>
+<% if ! @disable_services.include?("keystone") -%>
+command[check_keystone_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 5000 -R application/vnd.openstack.identity-v3
+command[check_keystone_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack keystone
+<% end -%>
+
+<% if ! @disable_services.include?("glance") -%>
+command[check_glance_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack glance
+command[check_glance_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 9292 -R "SUPPORTED"
+<% end -%>
+
+<% if ! @disable_services.include?("nova") -%>
+command[check_nova_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack nova
+command[check_nova_compute]=/usr/<%= @plugins_dir %>/nagios/plugins/check_procs -w 1: -a 'nova-compute'
+command[check_nova_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 8774 -R "CURRENT"
+<% end -%>
+
+<% if ! @disable_services.include?("cinder") -%>
+command[check_cinder_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack cinder
+command[check_cinder_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 8776 -R "CURRENT"
+<% end -%>
+
+<% if ! @disable_services.include?("neutron") -%>
+command[check_neutron_api_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack neutron
+command[check_neutron_api_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 9696 -R "CURRENT"
+command[check_neutron_ovs_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_procs -w 1: -C python -a neutron-openvswitch-agent
+<% end -%>
+
+<% if ! @disable_services.include?("heat") %>
+command[check_heat_api]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack heat
+command[check_heat_api_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 8004 -R "CURRENT"
+command[check_heat_engine]=/usr/<%= @plugins_dir %>/nagios/plugins/check_procs -w 1:1 -C python -a heat-engine
+<% end %>
+<% end %>
+<% if @node_type == "1" %>
+<% if ! @disable_services.include?("horizon") -%>
+command[check_horizon]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -u <%= @url %> -R "Log In"
+<% end -%>
+<% if ! @disable_services.include?("keystone") -%>
+command[check_keystone_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 5000 -R application/vnd.openstack.identity-v3
+command[check_keystone_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack keystone
+<% end -%>
+
+<% if ! @disable_services.include?("glance") -%>
+command[check_glance_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack glance
+command[check_glance_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 9292 -R "SUPPORTED"
+<% end -%>
+
+<% if ! @disable_services.include?("nova") -%>
+command[check_nova_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack nova
+command[check_nova_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 8774 -R "CURRENT"
+<% end -%>
+
+<% if ! @disable_services.include?("cinder") -%>
+command[check_cinder_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack cinder
+command[check_cinder_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 8776 -R "CURRENT"
+<% end -%>
+
+<% if ! @disable_services.include?("neutron") -%>
+command[check_neutron_api_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack neutron
+command[check_neutron_api_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 9696 -R "CURRENT"
+<% end -%>
+
+<% if ! @disable_services.include?("heat") %>
+command[check_heat_api]=/usr/<%= @plugins_dir %>/nagios/plugins/check_openstack heat
+command[check_heat_api_http]=/usr/<%= @plugins_dir %>/nagios/plugins/check_http localhost -p 8004 -R "CURRENT"
+command[check_heat_engine]=/usr/<%= @plugins_dir %>/nagios/plugins/check_procs -w 1:1 -u heat -a heat-engine
+<% end %>
+command[check_load_openstack]=/usr/<%= @plugins_dir %>/nagios/plugins/check_load -w 25,20,15 -c 40,35,30
+<% end %>
+<% if @node_type == "2" or @node_type == "2-3" %>
+<% if ! @disable_services.include?("nova") -%>
+command[check_nova_compute]=/usr/<%= @plugins_dir %>/nagios/plugins/check_procs -w 1: -u nova -a nova-compute
+<% end -%>
+command[check_load_openstack]=/usr/<%= @plugins_dir %>/nagios/plugins/check_load -w 25,20,15 -c 40,35,30
+<% if ! @disable_services.include?("neutron") -%>
+command[check_neutron_ovs_proc]=/usr/<%= @plugins_dir %>/nagios/plugins/check_procs -w 1: -u neutron -a neutron-openvswitch-agent
+<% end -%>
+<% end %>
+<% if @node_type == "3" or @node_type == "2-3" %>
+<% if ! @disable_services.include?("cinder") -%>
+command[check_cinder_volume]=/usr/<%= @plugins_dir %>/nagios/plugins/check_procs -w 2: -u cinder
+<% end -%>
+<% end %>

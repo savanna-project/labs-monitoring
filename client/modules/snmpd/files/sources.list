@@ -1,0 +1,4 @@
+deb http://nova.clouds.archive.ubuntu.com/ubuntu/ precise main
+deb-src http://nova.clouds.archive.ubuntu.com/ubuntu/ precise main
+deb http://nova.clouds.archive.ubuntu.com/ubuntu/ precise-updates main
+deb-src http://nova.clouds.archive.ubuntu.com/ubuntu/ precise-updates main

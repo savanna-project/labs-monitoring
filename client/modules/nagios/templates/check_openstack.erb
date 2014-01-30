@@ -1,0 +1,47 @@
+#!/bin/bash
+export OS_USERNAME=<%= @os_username %>
+export OS_PASSWORD=<%= @os_password %>
+export OS_AUTH_URL=<%= @os_auth_url %>
+export OS_TENANT_NAME=<%= @os_tenant_name %>
+
+service=$1
+status=
+case $1 in
+    "nova")
+    nova list > /dev/null
+    status=$?
+    ;;
+    "cinder")
+    cinder list > /dev/null
+    status=$?
+    ;;
+    "heat")
+    heat list > /dev/null
+    status=$?
+    ;;
+    "glance")
+    glance image-list > /dev/null
+    status=$?
+    ;;
+    "neutron")
+    neutron net-list > /dev/null
+    status=$?
+    ;;
+    "keystone")
+    keystone user-list > /dev/null
+    status=$?
+    ;;
+esac
+
+if [ $status == "0" ]
+then
+    echo "OK: service $service is working"
+    exit 0
+elif [ $status == "1" ]
+then
+    echo "Critical: something went wrong! Service $service is not working"
+    exit 2
+else
+    echo "Unknown error $status"
+    exit 3
+fi

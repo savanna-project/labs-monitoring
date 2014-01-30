@@ -1,0 +1,187 @@
+##########################################################
+################# Controller services ####################
+##########################################################
+<% if ! @disable_services.include?("horizon") %>
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Horizon
+        check_command                   check_nrpe_1arg!check_horizon
+}
+<% end %>
+<% if ! @disable_services.include?("keystone") %>
+define service{
+        use                             openstack-service    
+        host_name                       <%= @controller_name %>
+        service_description             Keystone API-HTTP
+        check_command                   check_nrpe_1arg!check_keystone_http
+}
+
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Keystone API
+        check_command                   check_nrpe_1arg!check_keystone_proc
+}
+<% end %>
+<% if ! @disable_services.include?("glance") %>
+define service{
+        use                             openstack-service    
+        host_name                       <%= @controller_name %>
+        service_description             Glance API
+        check_command                   check_nrpe_1arg!check_glance_proc
+}
+
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Glance API-HTTP
+        check_command                   check_nrpe_1arg!check_glance_http
+}
+<% end %>
+<% if ! @disable_services.include?("nova") %>
+define service{
+        use                             openstack-service    
+        host_name                       <%= @controller_name %>
+        service_description             Nova API
+        check_command                   check_nrpe_1arg!check_nova_proc
+}
+
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Nova API-HTTP
+        check_command                   check_nrpe_1arg!check_nova_http
+}
+<% end %>
+<% if ! @disable_services.include?("cinder") %>
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Cinder API-Services
+        check_command                   check_nrpe_1arg!check_cinder_proc
+}
+
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Cinder API-HTTP
+        check_command                   check_nrpe_1arg!check_cinder_http
+}
+<% end %>
+<% if ! @disable_services.include?("neutron") %>
+define service{
+        use                             openstack-service    
+        host_name                       <%= @controller_name %>
+        service_description             Neutron API
+        check_command                   check_nrpe_1arg!check_neutron_api_proc
+}
+
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Neutron API-HTTP
+        check_command                   check_nrpe_1arg!check_neutron_api_http
+}
+<% end %>
+<% if ! @disable_services.include?("heat") %>
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Heat Engine
+        check_command                   check_nrpe_1arg!check_heat_engine
+}
+
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Heat API
+        check_command                   check_nrpe_1arg!check_heat_api
+}
+
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Heat API-HTTP
+        check_command                   check_nrpe_1arg!check_heat_api_http
+}
+<% end %>
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Load average
+        check_command                   check_nrpe_1arg!check_load_openstack
+}
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Free disk space
+        check_command                   check_nrpe_1arg!check_disk_openstack
+}
+##########################################################
+##########################################################
+##########################################################
+
+
+
+
+
+##########################################################
+################## Compute services ######################
+##########################################################
+<% if ! @disable_services.include?("nova") %>
+define service{
+        use                             openstack-service    
+        host_name                       <%= @compute_name %>
+        service_description             Nova Compute
+        check_command                   check_nrpe_1arg!check_nova_compute
+}
+<% end %>
+<% if ! @disable_services.include?("neutron") %>
+define service{
+        use                             openstack-service
+        host_name                       <%= @compute_name %>
+        service_description             Neutron OVS Agent
+        check_command                   check_nrpe_1arg!check_neutron_ovs_proc
+}
+<% end %>
+define service{
+        use                             openstack-service
+        host_name                       <%= @compute_name %>
+        service_description             Load average 
+        check_command                   check_nrpe_1arg!check_load_openstack
+}
+define service{
+        use                             openstack-service
+        host_name                       <%= @compute_name %>
+        service_description             Free disk space
+        check_command                   check_nrpe_1arg!check_disk_openstack
+}
+##########################################################
+##########################################################
+##########################################################
+
+<% if @openstack_type != "0" -%>
+##########################################################
+################### Cinder services ######################
+##########################################################
+<% if ! @disable_services.include?("cinder") %>
+define service{
+        use                             openstack-service    
+        host_name                       <%= @cinder_name %>
+        service_description             Cinder Volume
+        check_command                   check_nrpe_1arg!check_cinder_volume
+}
+<% end %>
+<% if @openstack_type == "1" -%>
+define service{
+        use                             openstack-service
+        host_name                       <%= @cinder_name %>
+        service_description             Free disk space
+        check_command                   check_nrpe_1arg!check_disk_openstack
+}
+<% end %>
+##########################################################
+##########################################################
+##########################################################
+<% end -%>

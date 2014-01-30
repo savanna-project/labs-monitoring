@@ -1,0 +1,57 @@
+<%##################################################################-%>
+<% if @openstack_type == "1" -%>
+define host{
+        use                     openstack-host
+        host_name               <%= @controller_name %>
+        alias                   Controller node (<%= @controller_name %>) of <%= @openstack_name %>
+        address                 <%= @controller_ip %>
+}
+<% names=@compute_name.split(",") -%>
+<% ips=@compute_ip.split(",") -%>
+<% ips.each_index do |i| -%>
+define host{
+        use                     openstack-host
+        host_name               <%= names[i] %>
+        alias                   Compute node (<%= names[i] %>) of <%= @openstack_name %>
+        address                 <%= ips[i] %>
+}
+<% end -%>
+<% names=@cinder_name.split(",") -%>
+<% ips=@cinder_ip.split(",") -%>
+<% ips.each_index do |i| -%>
+define host{
+        use                     openstack-host
+        host_name               <%= names[i] %>
+        alias                   Cinder node (<%= names[i] %>) of <%= @openstack_name %>
+        address                 <%= ips[i] %>
+}
+<% end -%>
+<% end -%>
+<%###################################################################-%>
+<% if @openstack_type == "2" -%>
+define host{
+        use                     openstack-host
+        host_name               <%= @controller_name %>
+        alias                   Controller node (<%= @controller_name %>) of <%= @openstack_name %>
+        address                 <%= @controller_ip %>
+}
+<% names=@compute_name.split(",") -%>
+<% ips=@compute_ip.split(",") -%>
+<% ips.each_index do |i| -%>
+define host{
+        use                     openstack-host
+        host_name               <%= names[i] %>
+        alias                   Compute-Cinder node (<%= names[i] %>) of <%= @openstack_name %>
+        address                 <%= ips[i] %>
+}
+<% end -%>
+<% end -%>
+<%###################################################################-%>
+<% if @openstack_type == "0" -%>
+define host{
+        use                     openstack-host
+        host_name               <%= @controller_name %>
+        alias                   Devstack node (<%= @controller_name %>) of <%= @openstack_name %>
+        address                 <%= @controller_ip %>
+}
+<% end -%>

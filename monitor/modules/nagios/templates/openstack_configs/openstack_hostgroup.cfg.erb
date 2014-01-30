@@ -1,0 +1,23 @@
+<% if @openstack_type == "1" %>
+define hostgroup {
+        hostgroup_name  <%= @group_name %>
+        alias           <%= @group_name %> Servers
+        members         <%= @compute_name %>, <%= @cinder_name %>, <%= @controller_name %>
+}
+<% end %>
+
+<% if @openstack_type == "2" %>
+define hostgroup {
+        hostgroup_name  <%= @group_name %>
+        alias           <%= @group_name %> Servers
+        members         <%= @compute_name %>, <%= @controller_name %>
+}
+<% end %>
+
+<% if @openstack_type == "0" %>
+define hostgroup {
+        hostgroup_name  <%= @group_name %>
+        alias           <%= @group_name %> Servers
+        members         <%= @controller_name %>
+}
+<% end %>
