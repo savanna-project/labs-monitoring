@@ -12,7 +12,7 @@ OS_TENANT_NAME=""
 monitor_ip=""
 monitor_name=""
 i_am_monitor=false
-disable_services=( "none" )
+disable_services=( )
 
 openstack_type=""
 openstack_name=""
@@ -23,10 +23,14 @@ compute_ip=( )
 cinder_name=( )
 cinder_ip=( )
 
+nagios_admin="nagiosadmin"
 nagios_password="nagiosadmin"
 admin_email="root@localhost"
 refresh_rate="30"
 command_check_interval="10s"
+
+guest_user="guest"
+guest_password="welcome"
 
 send_files () {
    if [ $i_am_monitor ] && [ $4 == "monitor" ]
@@ -98,10 +102,14 @@ create_monitor_config () {
        cacti_hosts     => [ $hosts ],
    }
    class { 'nagios::server':
-       nagios_password => \"$nagios_password\",
-       admin_email     => \"$admin_email\",
-       refresh_rate    => \"$refresh_rate\",
+       nagios_user         => \"$nagios_admin\",
+       cgi_authorized_user => \"$nagios_admin\",
+       nagios_password     => \"$nagios_password\",
+       admin_email         => \"$admin_email\",
+       refresh_rate        => \"$refresh_rate\",
        command_check_interval => \"$command_check_interval\",
+       guest_user          => \"$guest_user\",
+       guest_password      => \"$guest_password\",
    }
    \$my_stacks = {
            '$openstack_name'  => {
@@ -200,9 +208,9 @@ then
     echo "Parameter 'monitor_name' is not specified."
     exit 3
 fi
-if [ -z $nagios_password ] || [ -z $admin_email ] || [ -z $refresh_rate ] || [ -z $command_check_interval ]
+if [ -z $nagios_password ] || [ -z $admin_email ] || [ -z $refresh_rate ] || [ -z $command_check_interval ] || [ -z $nagios_admin ]
 then
-    echo "Some of default parameter 'nagios_password', 'admin_email', 'refresh_rate', 'command_check_interval' is not specified."
+    echo "Some of default parameter 'nagios_admin', 'nagios_password', 'admin_email', 'refresh_rate', 'command_check_interval' is not specified."
     exit 3
 fi
 

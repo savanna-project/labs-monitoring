@@ -4,7 +4,7 @@ class nagios::creds (
   os_password="",
   os_tenant_name="",
 ) inherits params {
-  file { "/usr/$::nagios::params::plugins_dir/nagios/plugins/check_openstack":
+  file { "${plugins_dir}/check_openstack":
     mode    => '0755',
     content => template('nagios/check_openstack.erb'),
     require => Package['nagios-plugins'],

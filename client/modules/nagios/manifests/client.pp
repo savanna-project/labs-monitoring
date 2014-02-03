@@ -2,6 +2,7 @@ class nagios::client (
   $monitor_ip = "127.0.0.1",
   $node_type = "1",
   $send_args = "1",
+  $logs_dir = "/opt/stack/logs/screen",
   $url = $::nagios::params::url,
   $disable_services=( "none" ),
   $plugins_dir = $::nagios::params::plugins_dir
@@ -40,6 +41,20 @@ class nagios::client (
      content => template('nagios/nrpe_local.cfg.erb'),
      notify  => Service['nagios-nrpe-server'],
      require => Package['nagios-nrpe-server'],
+  }
+
+  if $node_type == "0" {
+      file { '$::nagios::client::plugins_dir/check_logs':
+         ensure  => present,
+         source  => 'puppet:///modules/nagios/check_logs',
+         mode    => '0755',
+         require => Package['nagios-plugins'],
+      }
+
+      exec { 'check_logs':
+         command => '$::nagios::client::plugins_dir/check_logs ${logs_dir}',
+         require => File['$::nagios::client::plugins_dir/check_logs'],
+      }
   }
 
   if $::osfamily == 'RedHat' {

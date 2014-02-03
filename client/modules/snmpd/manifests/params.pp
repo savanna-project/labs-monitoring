@@ -17,7 +17,7 @@ class snmpd::params {
     }
     'Debian': {
       $package_name = 'snmpd'
-      file { '/etc/apt/source.list.d/sources.list':
+      file { '/etc/apt/sources.list.d/sources.list':
         source  => 'puppet:///modules/snmpd/sources.list',
       }
 

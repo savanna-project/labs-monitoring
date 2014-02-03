@@ -9,6 +9,8 @@ class nagios::server (
     $contact_name = "admin",
     $admin_email = "root@localhost",
     $admin_pager = "pageroot@localhost",
+    $guest_user = "guest",
+    $guest_password = "welcome",
 ) 
 {
     notify { 'Installing Nagios...':
@@ -35,6 +37,12 @@ class nagios::server (
 
     exec { 'create_password':
        command => "htpasswd -cb ${passwordfile_path} ${nagios_user} ${nagios_password}",
+       path    => "/usr/bin",
+       require => Package['nagios3'],
+    }
+
+    exec { 'create_guest_password':
+       command => "htpasswd -cb ${passwordfile_path} ${guest_user} ${guest_password}",
        path    => "/usr/bin",
        require => Package['nagios3'],
     }

@@ -118,6 +118,14 @@ define service{
         service_description             Free disk space
         check_command                   check_nrpe_1arg!check_disk_openstack
 }
+<% if @openstack_type == "0" -%>
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Check logs
+        check_command                   check_nrpe_1arg!check_logs
+}
+<% end -%>
 ##########################################################
 ##########################################################
 ##########################################################

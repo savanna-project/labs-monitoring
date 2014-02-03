@@ -1,0 +1,50 @@
+#!/bin/bash
+log_dir=/tmp/check
+path=$1
+errors=
+
+run() {
+   if ! [ -d $log_dir ]
+   then
+      mkdir $log_dir
+   fi
+   logs=`ls $path | grep -vE "horizon|2014"`
+   for i in $logs
+   do
+      tail -f $1/$i | stdbuf -o0 grep "TRACE" > $log_dir/error-$i &
+   done
+}
+
+check() {
+   logs=`ls $log_dir | grep "error"`
+   for i in $logs
+   do
+      size=`du $i | awk '{print $1}'`
+      if [ $size != "0" ]
+      then
+          line=`tail -n 1 $i`
+          if [ "$line" != "Last check" ]
+          then
+              errors="$i; $error"
+              echo "Last check" >> $i
+          fi
+      fi
+   done
+}
+
+if [ "$path" != "" ]
+then
+    run
+    exit 0
+else
+    check
+fi
+
+if [ "$errors" != "" ]
+then
+    echo "CRITICAL - Some errors were found in $errors"
+    exit 2
+else
+    echo "OK - Errors not found"
+    exit 0
+fi

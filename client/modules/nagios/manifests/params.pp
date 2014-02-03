@@ -3,13 +3,13 @@ class nagios::params {
        'RedHat': {
           $nrpe_package_name = 'nrpe'
           $nagios_plugins_name = 'nagios-plugins-all'
-          $plugins_dir = 'lib64'
+          $plugins_dir = '/usr/lib64/nagios/plugins'
           $url = '/dashboard'
         }
         'Debian': {
           $nrpe_package_name = 'nagios-nrpe-server'
           $nagios_plugins_name = 'nagios-plugins'
-          $plugins_dir = 'lib'
+          $plugins_dir = '/usr/lib/nagios/plugins'
           $url = '/'
         }
     default: {
