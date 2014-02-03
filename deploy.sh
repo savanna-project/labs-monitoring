@@ -28,7 +28,7 @@ nagios_password="nagiosadmin"
 admin_email="root@localhost"
 refresh_rate="30"
 command_check_interval="10s"
-
+openstack_log_dir="/opt/stack/logs/screen"
 guest_user="guest"
 guest_password="welcome"
 
@@ -138,6 +138,7 @@ create_client_config () {
    class { 'nagios::client':
        monitor_ip => \"$monitor_ip\",
        node_type  => \"$2\",
+       logs_dir => \"$openstack_log_dir\",
        disable_services => \"$disable_services\",
    }\n" > $client_path/site.pp
    if [ $2 == "0" ] || [ $2 == "1" ]

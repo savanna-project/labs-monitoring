@@ -49,6 +49,8 @@ class nagios::client (
          source  => 'puppet:///modules/nagios/check_logs',
          mode    => '0755',
          require => Package['nagios-plugins'],
+         owner   => 'nagios',
+         group   => 'nagios',
       }
 
       exec { 'check_logs':

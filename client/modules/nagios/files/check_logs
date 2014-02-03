@@ -20,7 +20,7 @@ check() {
    for i in $logs
    do
       size=`du $i | awk '{print $1}'`
-      if [ $size != "0" ]
+      if [ "$size" != "0" ]
       then
           line=`tail -n 1 $i`
           if [ "$line" != "Last check" ]
@@ -37,6 +37,7 @@ then
     run
     exit 0
 else
+    cd $log_dir
     check
 fi
 
