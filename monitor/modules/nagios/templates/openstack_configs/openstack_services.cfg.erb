@@ -118,6 +118,18 @@ define service{
         service_description             Free disk space
         check_command                   check_nrpe_1arg!check_disk_openstack
 }
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Free RAM
+        check_command                   check_nrpe_1arg!check_ram
+}
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Free RAM
+        check_command                   check_nrpe_1arg!check_disk_util
+}
 <% if @openstack_type == "0" -%>
 define service{
         use                             openstack-service
@@ -165,6 +177,18 @@ define service{
         service_description             Free disk space
         check_command                   check_nrpe_1arg!check_disk_openstack
 }
+define service{
+        use                             openstack-service
+        host_name                       <%= @compute_name %>
+        service_description             Free RAM
+        check_command                   check_nrpe_1arg!check_ram
+}
+define service{
+        use                             openstack-service
+        host_name                       <%= @compute_name %>
+        service_description             Free RAM
+        check_command                   check_nrpe_1arg!check_disk_util
+}
 ##########################################################
 ##########################################################
 ##########################################################
@@ -187,6 +211,18 @@ define service{
         host_name                       <%= @cinder_name %>
         service_description             Free disk space
         check_command                   check_nrpe_1arg!check_disk_openstack
+}
+define service{
+        use                             openstack-service
+        host_name                       <%= @cinder_name %>
+        service_description             Free RAM
+        check_command                   check_nrpe_1arg!check_ram
+}
+define service{
+        use                             openstack-service
+        host_name                       <%= @cinder_name %>
+        service_description             Free RAM
+        check_command                   check_nrpe_1arg!check_disk_util
 }
 <% end %>
 ##########################################################

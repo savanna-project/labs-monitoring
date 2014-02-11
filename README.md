@@ -34,6 +34,6 @@ Parameters, which are set by default, but you can change them:
 *  guest_user - guest user fot web UI ('guest' by default);
 *  guest_password - password fot guest user ('welcome' by default);
 *  admin_email - The e-mail for notifications and alerts (using 'root@localhost' by default);
-*  openstack_log_dir - directory, where located logs for openstack. It only uses for devstack, for now (using '/opt/stack/logs/screen' by default);
+*  devstack_log_dir - directory, where located logs for openstack. It only uses for devstack, for now (using '/opt/stack/logs/screen' by default);
 *  refresh_rate - The interval for services checking (using '30' second by default);
 *  command_check_interval - The interval to wait between external command checks (using "10s" by default, 's' is necessary).

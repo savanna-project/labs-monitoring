@@ -5,7 +5,8 @@ class nagios::client (
   $logs_dir = "/opt/stack/logs/screen",
   $url = $::nagios::params::url,
   $disable_services=( "none" ),
-  $plugins_dir = $::nagios::params::plugins_dir
+  $plugins_dir = $::nagios::params::plugins_dir,
+  $devices="sda sdi sdj"
 ) inherits nagios::params {
 
   notify { 'Installing Nagios NRPE Daemon...':
@@ -57,6 +58,24 @@ class nagios::client (
          command => '$::nagios::client::plugins_dir/check_logs ${logs_dir}',
          require => File['$::nagios::client::plugins_dir/check_logs'],
       }
+  }
+
+  file { '$::nagios::client::plugins_dir/check_ram':
+     ensure  => present,
+     source  => 'puppet:///modules/nagios/check_ram',
+     mode    => '0755',
+     require => Package['nagios-plugins'],
+     owner   => 'nagios',
+     group   => 'nagios',
+  }
+
+  file { '$::nagios::client::plugins_dir/check_disk_util':
+     ensure  => present,
+     source  => 'puppet:///modules/nagios/check_disk_util',
+     mode    => '0755',
+     require => Package['nagios-plugins'],
+     owner   => 'nagios',
+     group   => 'nagios',
   }
 
   if $::osfamily == 'RedHat' {

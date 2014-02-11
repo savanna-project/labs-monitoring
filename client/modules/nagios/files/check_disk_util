@@ -1,0 +1,63 @@
+#!/bin/bash
+
+while test -n "$1"; do
+    set=1
+    case "$1" in
+        -w)
+            warning=$2
+            shift
+            ;;
+        -d)
+            devices=$2
+            shift
+            ;;
+        -c)
+            critical=$2
+            shift
+            ;;
+        *)
+            echo "Unknown argument: $1"
+            exit 3
+            ;;
+        esac
+    shift
+done
+
+STATUS="OK"
+DEV_STATE=
+for device in $devices
+do
+   if [ -d /sys/block/$device ]
+   then
+       util=`iostat -tx | grep $device | awk '{print $NF}'`
+       if (( "$util" < "$warning" ))
+       then
+           DEV_STATE=$DEV_STATE"Status /sys/block/$device: OK, %util $util\n"
+       elif (( "$util" < "$critical" ))
+       then
+           DEV_STATE=$DEV_STATE"Status /sys/block/$device: WARNING, %util $util\n"
+           STATUS="WARNING"
+       else
+           DEV_STATE=$DEV_STATE"Status /sys/block/$device: CRITICAL, %util $util\n"
+           STATUS="CRITICAL"
+       fi
+   fi
+done
+
+if [ -z "$DEV_STATE" ]
+then
+   echo "Not found any hard device: $devices"
+   exit 3
+fi
+if [ $STATUS == "OK" ]
+then
+   echo -e $DEV_STATE
+   exit 0
+elif [ $STATUS == "WARNING" ]
+then
+   echo -e $DEV_STATE
+   exit 1
+else
+   echo -e $DEV_STATE
+   exit 2
+fi
