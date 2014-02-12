@@ -6,7 +6,9 @@ dont_blame_nrpe=<%= @send_args %>
 <%# Parameter 'node_type' defines type of node: 0 - devstack-single node, 1 - controller, 2 - compute, 3 - cinder, 2-3 - compute+cinder %>
 command[check_disk_openstack]=<%= @plugins_dir %>/check_disk -w 10% -c 5%
 command[check_ram]=<%= @plugins_dir %>/check_ram 10 5
-command[check_disk_util]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -d "<%= @devices %>"
+command[check_disk_util]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -f "%util"
+command[check_disk_await]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -f "await"
+command[check_disk_queue]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -f "avgqu-sz"
 <% if @node_type == "0" -%>
 command[check_logs]=<%= @plugins_dir %>/check_logs
 command[check_load_openstack]=<%= @plugins_dir %>/check_load -w 100,95,80 -c 200,180,170

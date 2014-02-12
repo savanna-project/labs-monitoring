@@ -14,7 +14,8 @@ run() {
    logs=`ls $path | grep -vE "horizon|2014"`
    for i in $logs
    do
-      tail -f $1/$i | stdbuf -o0 grep "TRACE" > $log_dir/error-$i &
+      tail -f $path/$i | stdbuf -o0 grep "TRACE" > $log_dir/error-$i &
+      chown nagios:nagios $log_dir/error-$i
    done
 }
 
@@ -29,7 +30,7 @@ check() {
           if [ "$line" != "Last check" ]
           then
               errors="$i; $error"
-              echo "Last check" >> $i
+              echo "Last check" >> $log_dir/$i
           fi
       fi
    done

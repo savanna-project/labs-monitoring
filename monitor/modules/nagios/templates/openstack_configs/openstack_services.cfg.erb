@@ -58,7 +58,7 @@ define service{
 define service{
         use                             openstack-service
         host_name                       <%= @controller_name %>
-        service_description             Cinder API-Services
+        service_description             Cinder API
         check_command                   check_nrpe_1arg!check_cinder_proc
 }
 
@@ -130,6 +130,18 @@ define service{
         service_description             Disk load
         check_command                   check_nrpe_1arg!check_disk_util
 }
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Disk await
+        check_command                   check_nrpe_1arg!check_disk_await
+}
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Disk queue
+        check_command                   check_nrpe_1arg!check_disk_queue
+}
 <% if @openstack_type == "0" -%>
 define service{
         use                             openstack-service
@@ -165,6 +177,7 @@ define service{
         check_command                   check_nrpe_1arg!check_neutron_ovs_proc
 }
 <% end %>
+<% if @openstack_type != "0" -%>
 define service{
         use                             openstack-service
         host_name                       <%= @compute_name %>
@@ -189,11 +202,23 @@ define service{
         service_description             Disk load
         check_command                   check_nrpe_1arg!check_disk_util
 }
+define service{
+        use                             openstack-service
+        host_name                       <%= @compute_name %>
+        service_description             Disk await
+        check_command                   check_nrpe_1arg!check_disk_await
+}
+define service{
+        use                             openstack-service
+        host_name                       <%= @compute_name %>
+        service_description             Disk queue
+        check_command                   check_nrpe_1arg!check_disk_queue
+}
+<% end %>
 ##########################################################
 ##########################################################
 ##########################################################
 
-<% if @openstack_type != "0" -%>
 ##########################################################
 ################### Cinder services ######################
 ##########################################################
@@ -224,8 +249,19 @@ define service{
         service_description             Disk load
         check_command                   check_nrpe_1arg!check_disk_util
 }
+define service{
+        use                             openstack-service
+        host_name                       <%= @cinder_name %>
+        service_description             Disk await
+        check_command                   check_nrpe_1arg!check_disk_await
+}
+define service{
+        use                             openstack-service
+        host_name                       <%= @cinder_name %>
+        service_description             Disk queue
+        check_command                   check_nrpe_1arg!check_disk_queue
+}
 <% end %>
 ##########################################################
 ##########################################################
 ##########################################################
-<% end -%>

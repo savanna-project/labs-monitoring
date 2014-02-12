@@ -1,4 +1,4 @@
-To set up lab's monitoring you should set all required parameters in the ``deploy.sh`` script and run it. Also, you must be sure, that you can ssh to the VMs without password (using an RSA keypair).
+To set up lab's monitoring you should set all required parameters in the ``deploy.sh`` script and run it. Also, you must be sure, that you can ssh to the VMs without password (using an RSA keypair, see 'key' parameter).
 
 Parameters, which should be set:
 *  openstack creds (OS_USERNAME, OS_AUTH_URL, OS_PASSWORD, OS_TENANT_NAME)
@@ -25,6 +25,7 @@ If you use openstack_type "0", you can skip 'compute_name', 'compute_ip', 'cinde
 If you use openstack_type "2", you can skip 'cinder_name', 'cinder_ip'. In this case it means, that cinder and compute services run on the same node.
 
 Parameters, which are set by default, but you can change them:
+*  key - identity file (using 'id_rsa' by default);
 *  disable_services - specify services (as array, like 'compute_name'), which you want disable (using 'none' by default). The acceptable values are: 'horizon', 'nova', 'glance', 'heat', 'neutron', 'cinder';
 *  log_dir - directory for logs on a VM, where you run ``deploy.sh`` (using '%git-clone-dir%/puppet-log' by default);
 *  user - The name of a user, which will install all packages. This user should have your RSA key (using 'root' by default);

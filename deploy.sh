@@ -3,6 +3,7 @@ client_path=`pwd`"/client"
 monitor_path=`pwd`"/monitor"
 log_dir=`pwd`/puppet-logs
 user="root"
+key="~/.ssh/id_rsa"
 
 OS_USERNAME=""
 OS_AUTH_URL=""
@@ -12,7 +13,7 @@ OS_TENANT_NAME=""
 monitor_ip=""
 monitor_name=""
 i_am_monitor=false
-disable_services=( )
+disable_services=( "none" )
 
 openstack_type=""
 openstack_name=""
@@ -38,14 +39,14 @@ send_files () {
        puppet apply --verbose --trace --modulepath=$monitor_path/modules $monitor_path/site.pp 2>&1 | tee $log_dir/$monitor_name-$monitor_ip.log
    else
        echo "Send files to $2 ($3)..."
-       scp -qr $1 $user@$3:/tmp
+       scp -qr $1 $user@$3:/tmp -i $key
        if [ $? -ne 0 ]
        then
            echo "Can't copy files to $2 ($3)"
            exit 3
        fi
        echo "Run puppet on $2 ($3)..."
-       ssh $user@$3 "puppet apply --verbose --trace --modulepath='/tmp/$4/modules' /tmp/$4/site.pp" 2>&1 | tee $log_dir/$2-$3.log
+       ssh $user@$3 -i $key "puppet apply --verbose --trace --modulepath='/tmp/$4/modules' /tmp/$4/site.pp" 2>&1 | tee $log_dir/$2-$3.log
    fi
    if [ ${PIPESTATUS[0]} -eq 0 ]
    then
@@ -156,7 +157,7 @@ create_client_config () {
 }
 
 check_access () {
-   ssh $user@$2 -qo StrictHostKeyChecking=no "uname" > /dev/null
+   ssh $user@$2 -i ~/.ssh/$key -qo StrictHostKeyChecking=no "uname" > /dev/null
    if [ $? -ne 0 ]
    then
        echo "Access denied to $1"

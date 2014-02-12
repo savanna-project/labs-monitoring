@@ -6,7 +6,6 @@ class nagios::client (
   $url = $::nagios::params::url,
   $disable_services=( "none" ),
   $plugins_dir = $::nagios::params::plugins_dir,
-  $devices="sda sdi sdj"
 ) inherits nagios::params {
 
   include iostat

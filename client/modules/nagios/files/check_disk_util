@@ -7,12 +7,12 @@ while test -n "$1"; do
             warning=$2
             shift
             ;;
-        -d)
-            devices=$2
-            shift
-            ;;
         -c)
             critical=$2
+            shift
+            ;;
+        -f)
+            field=$2
             shift
             ;;
         *)
@@ -25,22 +25,23 @@ done
 
 STATUS="OK"
 DEV_STATE=
-for device in $devices
+col_number=`iostat -xt | awk -v field=$field '{ for (i=1; i<=NF; i++) { if ( $i == field) print i } }'`
+devices=`iostat -tx | grep "sd."`
+count=`echo $devices | awk '{ print NR }'`
+for (( i=1; i<=$count; i++ ));
 do
-   if [ -d /sys/block/$device ]
+   field_value=`echo $devices | awk -v col_number=$col_number '{ NR == $i; print $col_number }' | sed 's/,/./g'`
+   device=`echo $devices | awk '{ NR == $i; print $1 }'`
+   if [ $(echo "$field_value<$warning" | bc) -eq "1" ]
    then
-       util=`iostat -tx | grep $device | awk '{print $NF}'`
-       if [ $(echo "$util<$warning" | bc) -eq "1" ]
-       then
-           DEV_STATE=$DEV_STATE"Status /sys/block/$device: OK, %util $util\n"
-       elif [ $(echo "$util<$warning" | bc) -eq "1" ]
-       then
-           DEV_STATE=$DEV_STATE"Status /sys/block/$device: WARNING, %util $util\n"
-           STATUS="WARNING"
-       else
-           DEV_STATE=$DEV_STATE"Status /sys/block/$device: CRITICAL, %util $util\n"
-           STATUS="CRITICAL"
-       fi
+       DEV_STATE=$DEV_STATE"Status of $device: OK, $field $field_value\n"
+   elif [ $(echo "$field_value<$warning" | bc) -eq "1" ]
+   then
+       DEV_STATE=$DEV_STATE"Status of $device: WARNING, $field $field_value\n"
+       STATUS="WARNING"
+   else
+       DEV_STATE=$DEV_STATE"Status of $device: CRITICAL, $field $field_value\n"
+       STATUS="CRITICAL"
    fi
 done
 
