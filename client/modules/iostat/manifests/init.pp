@@ -1,10 +1,10 @@
 class iostat {
    notify { 'Installing sysstat tools..':
-      before => Package['iostat'],
    }
 
    package { 'iostat':
-      ensure => present,
-      name => 'sysstat',
+      ensure  => present,
+      name    => 'sysstat',
+      require => Notify['Installing sysstat tools..'],
    }
 }
