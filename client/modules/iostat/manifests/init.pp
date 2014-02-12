@@ -1,6 +1,4 @@
 class iostat {
-   notify { 'Installing sysstat tools..':
-   }
 
    package { 'iostat':
       ensure  => present,
