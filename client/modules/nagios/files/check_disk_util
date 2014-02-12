@@ -30,10 +30,10 @@ do
    if [ -d /sys/block/$device ]
    then
        util=`iostat -tx | grep $device | awk '{print $NF}'`
-       if (( "$util" < "$warning" ))
+       if [ $(echo "$util<$warning" | bc) -eq "1" ]
        then
            DEV_STATE=$DEV_STATE"Status /sys/block/$device: OK, %util $util\n"
-       elif (( "$util" < "$critical" ))
+       elif [ $(echo "$util<$warning" | bc) -eq "1" ]
        then
            DEV_STATE=$DEV_STATE"Status /sys/block/$device: WARNING, %util $util\n"
            STATUS="WARNING"
