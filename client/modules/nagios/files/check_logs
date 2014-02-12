@@ -7,6 +7,9 @@ run() {
    if ! [ -d $log_dir ]
    then
       mkdir $log_dir
+   else
+      rm $log_dir/*
+      ps aux | grep "tail -f $path" | awk '{print $2}' | xargs kill -9
    fi
    logs=`ls $path | grep -vE "horizon|2014"`
    for i in $logs

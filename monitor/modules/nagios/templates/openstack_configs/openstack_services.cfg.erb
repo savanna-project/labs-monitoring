@@ -127,7 +127,7 @@ define service{
 define service{
         use                             openstack-service
         host_name                       <%= @controller_name %>
-        service_description             Free RAM
+        service_description             Disk load
         check_command                   check_nrpe_1arg!check_disk_util
 }
 <% if @openstack_type == "0" -%>
@@ -186,7 +186,7 @@ define service{
 define service{
         use                             openstack-service
         host_name                       <%= @compute_name %>
-        service_description             Free RAM
+        service_description             Disk load
         check_command                   check_nrpe_1arg!check_disk_util
 }
 ##########################################################
@@ -221,7 +221,7 @@ define service{
 define service{
         use                             openstack-service
         host_name                       <%= @cinder_name %>
-        service_description             Free RAM
+        service_description             Disk load
         check_command                   check_nrpe_1arg!check_disk_util
 }
 <% end %>
