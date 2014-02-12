@@ -9,6 +9,8 @@ class nagios::client (
   $devices="sda sdi sdj"
 ) inherits nagios::params {
 
+  include iostat
+
   notify { 'Installing Nagios NRPE Daemon...':
     before => Package['nagios-nrpe-server'],
   }
@@ -45,7 +47,7 @@ class nagios::client (
   }
 
   if $node_type == "0" {
-      file { '$::nagios::client::plugins_dir/check_logs':
+      file { "${plugins_dir}/check_logs":
          ensure  => present,
          source  => 'puppet:///modules/nagios/check_logs',
          mode    => '0755',
@@ -55,12 +57,12 @@ class nagios::client (
       }
 
       exec { 'check_logs':
-         command => '$::nagios::client::plugins_dir/check_logs ${logs_dir}',
-         require => File['$::nagios::client::plugins_dir/check_logs'],
+         command => "${plugins_dir}/check_logs ${logs_dir}",
+         require => File["${plugins_dir}/check_logs"],
       }
   }
 
-  file { '$::nagios::client::plugins_dir/check_ram':
+  file { "${plugins_dir}/check_ram":
      ensure  => present,
      source  => 'puppet:///modules/nagios/check_ram',
      mode    => '0755',
@@ -69,11 +71,11 @@ class nagios::client (
      group   => 'nagios',
   }
 
-  file { '$::nagios::client::plugins_dir/check_disk_util':
+  file { "${plugins_dir}/check_disk_util":
      ensure  => present,
      source  => 'puppet:///modules/nagios/check_disk_util',
      mode    => '0755',
-     require => Package['nagios-plugins'],
+     require => [ Package['nagios-plugins'], Package['iostat'] ],
      owner   => 'nagios',
      group   => 'nagios',
   }
