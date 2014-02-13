@@ -3,7 +3,7 @@ client_path=`pwd`"/client"
 monitor_path=`pwd`"/monitor"
 log_dir=`pwd`/puppet-logs
 user="root"
-key="~/.ssh/id_rsa"
+key="/root/.ssh/id_rsa"
 
 OS_USERNAME=""
 OS_AUTH_URL=""
@@ -39,7 +39,7 @@ send_files () {
        puppet apply --verbose --trace --modulepath=$monitor_path/modules $monitor_path/site.pp 2>&1 | tee $log_dir/$monitor_name-$monitor_ip.log
    else
        echo "Send files to $2 ($3)..."
-       scp -qr $1 $user@$3:/tmp -i $key
+       scp -i $key -qr $1 $user@$3:/tmp
        if [ $? -ne 0 ]
        then
            echo "Can't copy files to $2 ($3)"
@@ -157,7 +157,7 @@ create_client_config () {
 }
 
 check_access () {
-   ssh $user@$2 -i ~/.ssh/$key -qo StrictHostKeyChecking=no "uname" > /dev/null
+   ssh $user@$2 -i $key -qo StrictHostKeyChecking=no "uname" > /dev/null
    if [ $? -ne 0 ]
    then
        echo "Access denied to $1"

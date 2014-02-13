@@ -30,7 +30,7 @@ if [ "$warn" -lt "$crit" -o "$warn" -eq "$crit" ]; then
         exit 3
 fi
 
-use=`echo $(( ($free * 100) / $full ))`
+use=`echo $(( 100 - ($free * 100) / $full ))`
 if [ "$use" -gt "$warn" -o "$use" -eq "$warn" ]; then
         echo "OK: $use% free memory"
         exit 0

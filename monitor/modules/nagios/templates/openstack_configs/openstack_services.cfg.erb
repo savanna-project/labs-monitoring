@@ -219,17 +219,18 @@ define service{
 ##########################################################
 ##########################################################
 
+<% if @openstack_type != "0" -%>
 ##########################################################
 ################### Cinder services ######################
 ##########################################################
-<% if ! @disable_services.include?("cinder") %>
+<% if ! @disable_services.include?("cinder") -%>
 define service{
         use                             openstack-service    
         host_name                       <%= @cinder_name %>
         service_description             Cinder Volume
         check_command                   check_nrpe_1arg!check_cinder_volume
 }
-<% end %>
+<% end -%>
 <% if @openstack_type == "1" -%>
 define service{
         use                             openstack-service
@@ -261,7 +262,8 @@ define service{
         service_description             Disk queue
         check_command                   check_nrpe_1arg!check_disk_queue
 }
-<% end %>
+<% end -%>
 ##########################################################
 ##########################################################
 ##########################################################
+<% end -%>

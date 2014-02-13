@@ -42,13 +42,13 @@ command[check_neutron_api_http]=<%= @plugins_dir %>/check_http localhost -p 9696
 command[check_neutron_ovs_proc]=<%= @plugins_dir %>/check_procs -w 1: -C python -a neutron-openvswitch-agent
 <% end -%>
 
-<% if ! @disable_services.include?("heat") %>
+<% if ! @disable_services.include?("heat") -%>
 command[check_heat_api]=<%= @plugins_dir %>/check_openstack heat
 command[check_heat_api_http]=<%= @plugins_dir %>/check_http localhost -p 8004 -R "CURRENT"
 command[check_heat_engine]=<%= @plugins_dir %>/check_procs -w 1:1 -C python -a heat-engine
-<% end %>
-<% end %>
-<% if @node_type == "1" %>
+<% end -%>
+<% end -%>
+<% if @node_type == "1" -%>
 <% if ! @disable_services.include?("horizon") -%>
 command[check_horizon]=<%= @plugins_dir %>/check_http localhost -u <%= @url %> -R "Log In"
 <% end -%>
@@ -77,14 +77,14 @@ command[check_neutron_api_proc]=<%= @plugins_dir %>/check_openstack neutron
 command[check_neutron_api_http]=<%= @plugins_dir %>/check_http localhost -p 9696 -R "CURRENT"
 <% end -%>
 
-<% if ! @disable_services.include?("heat") %>
+<% if ! @disable_services.include?("heat") -%>
 command[check_heat_api]=<%= @plugins_dir %>/check_openstack heat
 command[check_heat_api_http]=<%= @plugins_dir %>/check_http localhost -p 8004 -R "CURRENT"
 command[check_heat_engine]=<%= @plugins_dir %>/check_procs -w 1:1 -u heat -a heat-engine
-<% end %>
+<% end -%>
 command[check_load_openstack]=<%= @plugins_dir %>/check_load -w 25,20,15 -c 40,35,30
-<% end %>
-<% if @node_type == "2" or @node_type == "2-3" %>
+<% end -%>
+<% if @node_type == "2" or @node_type == "2-3" -%>
 <% if ! @disable_services.include?("nova") -%>
 command[check_nova_compute]=<%= @plugins_dir %>/check_procs -w 1: -u nova -a nova-compute
 <% end -%>
@@ -92,9 +92,9 @@ command[check_load_openstack]=<%= @plugins_dir %>/check_load -w 25,20,15 -c 40,3
 <% if ! @disable_services.include?("neutron") -%>
 command[check_neutron_ovs_proc]=<%= @plugins_dir %>/check_procs -w 1: -u neutron -a neutron-openvswitch-agent
 <% end -%>
-<% end %>
-<% if @node_type == "3" or @node_type == "2-3" %>
+<% end -%>
+<% if @node_type == "3" or @node_type == "2-3" -%>
 <% if ! @disable_services.include?("cinder") -%>
 command[check_cinder_volume]=<%= @plugins_dir %>/check_procs -w 2: -u cinder
 <% end -%>
-<% end %>
+<% end -%>
