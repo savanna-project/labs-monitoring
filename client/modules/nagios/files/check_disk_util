@@ -25,13 +25,14 @@ done
 
 STATUS="OK"
 DEV_STATE=
-col_number=`iostat -xt | awk -v field=$field '{ for (i=1; i<=NF; i++) { if ( $i == field) print i } }'`
-devices=`iostat -tx | grep "sd."`
-count=`echo $devices | awk '{ print NR }' | tail -n 1`
+iostat -tx | grep "sd." > /tmp/iostat-info
+col_number=`iostat -tx | awk -v field=$field '{ for (i=1; i<=NF; i++) { if ( $i == field) print i } }'`
+count=`cat /tmp/iostat-info | wc -l`
 for (( i=1; i<=$count; i++ ));
 do
-   field_value=`echo $devices | awk -v col_number=$col_number '{ NR == $i; print $col_number }' | sed 's/,/./g'`
-   device=`echo $devices | awk '{ NR == $i; print $1 }'`
+   row=`cat /tmp/iostat-info | awk -v i=$i 'NR == i'`
+   field_value=`echo $row | awk -v col_number=$col_number '{ print $col_number }' | sed 's/,/./g'`
+   device=`echo $row | awk '{ print $1 }'`
    if [ $(echo "$field_value<$warning" | bc) -eq "1" ]
    then
        DEV_STATE=$DEV_STATE"Status of $device: OK, $field $field_value\n"
