@@ -35,13 +35,13 @@ do
    device=`echo $row | awk '{ print $1 }'`
    if [ $(echo "$field_value<$warning" | bc) -eq "1" ]
    then
-       DEV_STATE=$DEV_STATE"Status of $device: OK, $field $field_value\n"
+       DEV_STATE=$DEV_STATE"Status of $device: OK, $field $field_value; \t"
    elif [ $(echo "$field_value<$warning" | bc) -eq "1" ]
    then
-       DEV_STATE=$DEV_STATE"Status of $device: WARNING, $field $field_value\n"
+       DEV_STATE=$DEV_STATE"Status of $device: WARNING, $field $field_value; \t"
        STATUS="WARNING"
    else
-       DEV_STATE=$DEV_STATE"Status of $device: CRITICAL, $field $field_value\n"
+       DEV_STATE=$DEV_STATE"Status of $device: CRITICAL, $field $field_value; \t"
        STATUS="CRITICAL"
    fi
 done

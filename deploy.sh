@@ -210,7 +210,7 @@ then
     echo "Parameter 'monitor_name' is not specified."
     exit 3
 fi
-if [ -z $nagios_password ] || [ -z $admin_email ] || [ -z $refresh_rate ] || [ -z $command_check_interval ] || [ -z $nagios_admin ]
+if [ -z $nagios_password ] || [ -z "$admin_email" ] || [ -z $refresh_rate ] || [ -z $command_check_interval ] || [ -z $nagios_admin ]
 then
     echo "Some of default parameter 'nagios_admin', 'nagios_password', 'admin_email', 'refresh_rate', 'command_check_interval' is not specified."
     exit 3

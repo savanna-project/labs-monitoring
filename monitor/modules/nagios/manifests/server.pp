@@ -35,16 +35,16 @@ class nagios::server (
        require => Package['nagios3'],
     }
 
-    exec { 'create_password':
+    exec { 'create_admin_password':
        command => "htpasswd -cb ${passwordfile_path} ${nagios_user} ${nagios_password}",
        path    => "/usr/bin",
        require => Package['nagios3'],
     }
 
     exec { 'create_guest_password':
-       command => "htpasswd -cb ${passwordfile_path} ${guest_user} ${guest_password}",
+       command => "htpasswd -b ${passwordfile_path} ${guest_user} ${guest_password}",
        path    => "/usr/bin",
-       require => Package['nagios3'],
+       require => [ Package['nagios3'], Exec['create_admin_password'] ],
     }
 
 
