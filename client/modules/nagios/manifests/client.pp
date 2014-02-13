@@ -8,7 +8,7 @@ class nagios::client (
   $plugins_dir = $::nagios::params::plugins_dir,
 ) inherits nagios::params {
 
-  include iostat
+  include tools
 
   notify { 'Installing Nagios NRPE Daemon...':
     before => Package['nagios-nrpe-server'],
@@ -74,7 +74,7 @@ class nagios::client (
      ensure  => present,
      source  => 'puppet:///modules/nagios/check_disk_util',
      mode    => '0755',
-     require => [ Package['nagios-plugins'], Package['iostat'] ],
+     require => [ Package['nagios-plugins'], Package['iostat'], Package['bc'] ],
      owner   => 'nagios',
      group   => 'nagios',
   }

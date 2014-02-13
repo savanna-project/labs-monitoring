@@ -27,7 +27,7 @@ STATUS="OK"
 DEV_STATE=
 col_number=`iostat -xt | awk -v field=$field '{ for (i=1; i<=NF; i++) { if ( $i == field) print i } }'`
 devices=`iostat -tx | grep "sd."`
-count=`echo $devices | awk '{ print NR }'`
+count=`echo $devices | awk '{ print NR }' | tail -n 1`
 for (( i=1; i<=$count; i++ ));
 do
    field_value=`echo $devices | awk -v col_number=$col_number '{ NR == $i; print $col_number }' | sed 's/,/./g'`
