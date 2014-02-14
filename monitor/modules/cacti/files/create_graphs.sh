@@ -49,13 +49,18 @@ function add_ds_graph {
   TYPE_ID=`php -q add_graphs.php --snmp-query-id=$SNMP_QUERY_ID \
     --list-query-types | grep "$TYPE_NAME"|cut -f 1`
 
-  GRAPH_ID=`php -q add_graphs.php --host-id=$HOST_ID --graph-type=ds \
+  GRAPHS_ID=`php -q add_graphs.php --host-id=$HOST_ID --graph-type=ds \
     --graph-template-id=$TEMPLATE_ID --snmp-query-id=$SNMP_QUERY_ID \
     --snmp-query-type-id=$TYPE_ID --snmp-field=$FIELD_NAME \
-    --snmp-value=$FIELD_VALUE |  grep -o "[0-9]*" | head -1`
+    --snmp-value=$FIELD_VALUE |  grep -o "[0-9]*"`
 
-  php -q add_tree.php --type=node --node-type=graph --tree-id=$TREE_ID \
-    --graph-id=$GRAPH_ID --parent-node=$PARENT_ID
+  count=`echo $GRAPHS_ID | awk '{print NF}'`
+  for ((i=1; i<$count;i+=2));
+  do
+       GRAPH_ID=`echo $GRAPHS_ID | awk -v i=$i '{print $i}'`
+       php -q add_tree.php --type=node --node-type=graph --tree-id=$TREE_ID \
+           --graph-id=$GRAPH_ID --parent-node=$PARENT_ID
+  done
 }
 
 SNMP_QUERY_ID=`php -q add_graphs.php --host-id=$HOST_ID --list-snmp-queries | \
