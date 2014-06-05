@@ -10,7 +10,9 @@ command[check_disk_util]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -f "%ut
 command[check_disk_await]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -f "await"
 command[check_disk_queue]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -f "avgqu-sz"
 <% if @node_type == "0" -%>
+<% if ! @disable_services.include?("log") -%>
 command[check_logs]=<%= @plugins_dir %>/check_logs
+<% end -%>
 command[check_load_openstack]=<%= @plugins_dir %>/check_load -w 100,95,80 -c 200,180,170
 <% if ! @disable_services.include?("horizon") -%>
 command[check_horizon]=<%= @plugins_dir %>/check_http localhost -u <%= @url %> -R "Log In"

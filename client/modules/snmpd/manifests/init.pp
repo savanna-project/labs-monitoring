@@ -1,7 +1,7 @@
 # == Class: snmpd
 #
 class snmpd {
-
+  include repo
   include snmpd::params
 
   notify { 'Installing SNMP agent...':
@@ -11,6 +11,7 @@ class snmpd {
   package { 'snmpd':
     ensure => present,
     name   => $::snmpd::params::package_name,
+    require => Exec['update-repo']
   }
 
   service { 'snmpd':
