@@ -45,7 +45,7 @@ class nagios::client (
      require => Package['nagios-nrpe-server'],
   }
 
-  if $node_type == "0" && ! disable_services.contain('log') {
+  if $node_type == "-1" {
       file { "${plugins_dir}/check_logs":
          ensure  => present,
          source  => 'puppet:///modules/nagios/check_logs',

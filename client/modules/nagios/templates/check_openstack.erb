@@ -31,6 +31,28 @@ case $1 in
     keystone user-list > /dev/null
     status=$?
     ;;
+    "swift")
+    swift list > /dev/null
+    status=$?
+    ;;
+    "swift-api")
+    tmp=`/usr/lib/nagios/plugins/check_http localhost -p 8080 -u "/v1/AUTH_" -R "Unauth"`
+    status=$?
+    if [ "$status" == "1" ]; then
+       echo $tmp | sed -e 's/WARNING/OK/g' | sed -e 's/401 Unauthorized //g'
+       exit 0
+    else
+       echo $tmp
+       exit 1
+    fi
+    ;;
+    "ceph")
+    if [ `ceph health` == "HEALTH_OK" ]; then
+       status=0
+    else
+       status=1
+    fi
+    ;;
 esac
 
 if [ $status == "0" ]

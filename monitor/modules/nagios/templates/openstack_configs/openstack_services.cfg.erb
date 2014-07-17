@@ -54,7 +54,7 @@ define service{
         check_command                   check_nrpe_1arg!check_nova_http
 }
 <% end %>
-<% if ! @disable_services.include?("cinder") %>
+<% if ! @disable_services.include?("cinder-api") %>
 define service{
         use                             openstack-service
         host_name                       <%= @controller_name %>
@@ -104,6 +104,29 @@ define service{
         host_name                       <%= @controller_name %>
         service_description             Heat API-HTTP
         check_command                   check_nrpe_1arg!check_heat_api_http
+}
+<% end %>
+<% if ! @disable_services.include?("ceph") %>
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Ceph health
+        check_command                   check_nrpe_1arg!check_ceph_health
+}
+<% end %>
+<% if ! @disable_services.include?("swift") %>
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Swift API
+        check_command                   check_nrpe_1arg!check_swift_api
+}
+
+define service{
+        use                             openstack-service
+        host_name                       <%= @controller_name %>
+        service_description             Swift API-HTTP
+        check_command                   check_nrpe_1arg!check_swift_api_http
 }
 <% end %>
 define service{
