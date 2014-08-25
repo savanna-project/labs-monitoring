@@ -4,93 +4,81 @@
 allowed_hosts=<%= @monitor_ip %>
 dont_blame_nrpe=<%= @send_args %>
 <%# Parameter 'node_type' defines type of node: 0 - devstack-single node, 1 - controller, 2 - compute, 3 - cinder, 2-3 - compute+cinder %>
+<%# General checks %>
 command[check_disk_openstack]=<%= @plugins_dir %>/check_disk -w 10% -c 5%
 command[check_ram]=<%= @plugins_dir %>/check_ram 10 5
 command[check_disk_util]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -f "%util"
 command[check_disk_await]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -f "await"
 command[check_disk_queue]=<%= @plugins_dir %>/check_disk_util -w 85 -c 95 -f "avgqu-sz"
+command[check_load_openstack]=<%= @plugins_dir %>/check_load -w 25,20,15 -c 40,35,30
+<% if @node_type == "0" or @node_type == "1" -%>
+<%# Horizon %>
+<% if ! @disable_services.include?("horizon") -%>
+command[check_horizon]=<%= @plugins_dir %>/check_http localhost -u <%= @url %> -R "Log In"
+<% end -%>
+<%# Keystone %>
+<% if ! @disable_services.include?("keystone") -%>
+command[check_keystone_http]=<%= @plugins_dir %>/check_http localhost -p 5000 -R application/vnd.openstack.identity-v3
+command[check_keystone_proc]=<%= @plugins_dir %>/check_openstack keystone
+<% end -%>
+<%# Glance %>
+<% if ! @disable_services.include?("glance") -%>
+command[check_glance_proc]=<%= @plugins_dir %>/check_openstack glance
+command[check_glance_http]=<%= @plugins_dir %>/check_http localhost -p 9292 -R "SUPPORTED"
+<% end -%>
+<%# Nova %>
+<% if ! @disable_services.include?("nova") -%>
+command[check_nova_proc]=<%= @plugins_dir %>/check_openstack nova
+command[check_nova_http]=<%= @plugins_dir %>/check_http localhost -p 8774 -R "CURRENT"
+<% if @node_type == "0" -%>
+command[check_nova_compute]=<%= @plugins_dir %>/check_procs -w 1: -a 'nova-compute'
+<% end -%>
+<% end -%>
+<%# Cinder %>
+<% if ! @disable_services.include?("cinder") -%>
+command[check_cinder_proc]=<%= @plugins_dir %>/check_openstack cinder
+command[check_cinder_http]=<%= @plugins_dir %>/check_http localhost -p 8776 -R "CURRENT"
+<% end -%>
+<%# Neutron %>
+<% if ! @disable_services.include?("neutron") -%>
+command[check_neutron_api_proc]=<%= @plugins_dir %>/check_openstack neutron
+command[check_neutron_api_http]=<%= @plugins_dir %>/check_http localhost -p 9696 -R "CURRENT"
+<% if @node_type == "0" -%>
+command[check_neutron_ovs_proc]=<%= @plugins_dir %>/check_procs -w 1: -C python -a neutron-openvswitch-agent
+<% end -%>
+<% end -%>
+<%# Heat %>
+<% if ! @disable_services.include?("heat") -%>
+command[check_heat_api]=<%= @plugins_dir %>/check_openstack heat
+command[check_heat_api_http]=<%= @plugins_dir %>/check_http localhost -p 8004 -R "CURRENT"
+<% if @node_type == "1" -%>
+command[check_heat_engine]=<%= @plugins_dir %>/check_procs -w 1:1 -u heat -a heat-engine
+<% end -%>
+<% if @node_type == "0" -%>
+command[check_heat_engine]=<%= @plugins_dir %>/check_procs -w 1:1 -C python -a heat-engine
+<% end -%>
+<% end -%>
+<%# Swift %>
+<% if ! @disable_services.include?("swift") -%>
+command[check_swift_api]=<%= @plugins_dir %>/check_openstack swift
+command[check_swift_api_http]=<%= @plugins_dir %>/check_openstack swift-api
+<% end -%>
+<%# Ceph %>
+<% if ! @disable_services.include?("ceph") -%>
+command[check_ceph_health]=<%= @plugins_dir %>/check_openstack ceph
+<% end -%>
+<% end -%>
+
 <% if @node_type == "0" -%>
 <% if ! @disable_services.include?("log") -%>
 command[check_logs]=<%= @plugins_dir %>/check_logs
 <% end -%>
-command[check_load_openstack]=<%= @plugins_dir %>/check_load -w 100,95,80 -c 200,180,170
-<% if ! @disable_services.include?("horizon") -%>
-command[check_horizon]=<%= @plugins_dir %>/check_http localhost -u <%= @url %> -R "Log In"
-<% end -%>
-<% if ! @disable_services.include?("keystone") -%>
-command[check_keystone_http]=<%= @plugins_dir %>/check_http localhost -p 5000 -R application/vnd.openstack.identity-v3
-command[check_keystone_proc]=<%= @plugins_dir %>/check_openstack keystone
 <% end -%>
 
-<% if ! @disable_services.include?("glance") -%>
-command[check_glance_proc]=<%= @plugins_dir %>/check_openstack glance
-command[check_glance_http]=<%= @plugins_dir %>/check_http localhost -p 9292 -R "SUPPORTED"
-<% end -%>
-
-<% if ! @disable_services.include?("nova") -%>
-command[check_nova_proc]=<%= @plugins_dir %>/check_openstack nova
-command[check_nova_compute]=<%= @plugins_dir %>/check_procs -w 1: -a 'nova-compute'
-command[check_nova_http]=<%= @plugins_dir %>/check_http localhost -p 8774 -R "CURRENT"
-<% end -%>
-
-<% if ! @disable_services.include?("cinder") -%>
-command[check_cinder_proc]=<%= @plugins_dir %>/check_openstack cinder
-command[check_cinder_http]=<%= @plugins_dir %>/check_http localhost -p 8776 -R "CURRENT"
-<% end -%>
-
-<% if ! @disable_services.include?("neutron") -%>
-command[check_neutron_api_proc]=<%= @plugins_dir %>/check_openstack neutron
-command[check_neutron_api_http]=<%= @plugins_dir %>/check_http localhost -p 9696 -R "CURRENT"
-command[check_neutron_ovs_proc]=<%= @plugins_dir %>/check_procs -w 1: -C python -a neutron-openvswitch-agent
-<% end -%>
-
-<% if ! @disable_services.include?("heat") -%>
-command[check_heat_api]=<%= @plugins_dir %>/check_openstack heat
-command[check_heat_api_http]=<%= @plugins_dir %>/check_http localhost -p 8004 -R "CURRENT"
-command[check_heat_engine]=<%= @plugins_dir %>/check_procs -w 1:1 -C python -a heat-engine
-<% end -%>
-<% end -%>
-<% if @node_type == "1" -%>
-<% if ! @disable_services.include?("horizon") -%>
-command[check_horizon]=<%= @plugins_dir %>/check_http localhost -u <%= @url %> -R "Log In"
-<% end -%>
-<% if ! @disable_services.include?("keystone") -%>
-command[check_keystone_http]=<%= @plugins_dir %>/check_http localhost -p 5000 -R application/vnd.openstack.identity-v3
-command[check_keystone_proc]=<%= @plugins_dir %>/check_openstack keystone
-<% end -%>
-
-<% if ! @disable_services.include?("glance") -%>
-command[check_glance_proc]=<%= @plugins_dir %>/check_openstack glance
-command[check_glance_http]=<%= @plugins_dir %>/check_http localhost -p 9292 -R "SUPPORTED"
-<% end -%>
-
-<% if ! @disable_services.include?("nova") -%>
-command[check_nova_proc]=<%= @plugins_dir %>/check_openstack nova
-command[check_nova_http]=<%= @plugins_dir %>/check_http localhost -p 8774 -R "CURRENT"
-<% end -%>
-
-<% if ! @disable_services.include?("cinder") -%>
-command[check_cinder_proc]=<%= @plugins_dir %>/check_openstack cinder
-command[check_cinder_http]=<%= @plugins_dir %>/check_http localhost -p 8776 -R "CURRENT"
-<% end -%>
-
-<% if ! @disable_services.include?("neutron") -%>
-command[check_neutron_api_proc]=<%= @plugins_dir %>/check_openstack neutron
-command[check_neutron_api_http]=<%= @plugins_dir %>/check_http localhost -p 9696 -R "CURRENT"
-<% end -%>
-
-<% if ! @disable_services.include?("heat") -%>
-command[check_heat_api]=<%= @plugins_dir %>/check_openstack heat
-command[check_heat_api_http]=<%= @plugins_dir %>/check_http localhost -p 8004 -R "CURRENT"
-command[check_heat_engine]=<%= @plugins_dir %>/check_procs -w 1:1 -u heat -a heat-engine
-<% end -%>
-command[check_load_openstack]=<%= @plugins_dir %>/check_load -w 25,20,15 -c 40,35,30
-<% end -%>
 <% if @node_type == "2" or @node_type == "2-3" -%>
 <% if ! @disable_services.include?("nova") -%>
 command[check_nova_compute]=<%= @plugins_dir %>/check_procs -w 1: -u nova -a nova-compute
 <% end -%>
-command[check_load_openstack]=<%= @plugins_dir %>/check_load -w 25,20,15 -c 40,35,30
 <% if ! @disable_services.include?("neutron") -%>
 command[check_neutron_ovs_proc]=<%= @plugins_dir %>/check_procs -w 1: -u neutron -a neutron-openvswitch-agent
 <% end -%>
