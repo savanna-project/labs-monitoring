@@ -144,11 +144,13 @@ create_client_config () {
    }\n" > $client_path/site.pp
    if [ $2 == "0" ] || [ $2 == "1" ]
    then
+       if [ "$2" == "1" ]; then ceph_auth="--keyring /etc/ceph/ceph.client.admin.keyring"; fi
        echo -e "class { 'nagios::creds':
        os_username => \"$OS_USERNAME\",
        os_auth_url => \"$OS_AUTH_URL\",
        os_password => \"$OS_PASSWORD\",
        os_tenant_name => \"$OS_TENANT_NAME\",
+       ceph_auth   => \"$ceph_auth\",
    }\n" >> $client_path/site.pp
    fi
    echo -e "Class['snmpd'] -> Class['nagios::client']

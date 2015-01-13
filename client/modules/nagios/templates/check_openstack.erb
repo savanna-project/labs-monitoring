@@ -16,7 +16,7 @@ case $1 in
     status=$?
     ;;
     "heat")
-    heat list > /dev/null
+    heat stack-list > /dev/null
     status=$?
     ;;
     "glance")
@@ -47,8 +47,12 @@ case $1 in
     fi
     ;;
     "ceph")
-    if [ `ceph health` == "HEALTH_OK" ]; then
+    ceph_out=`ceph <%= @ceph_auth %> health`
+    if [ "$ceph_out" == "HEALTH_OK" ]; then
        status=0
+    elif [[ "$ceph_out" =~ "HEALTH_WARN" ]]; then
+       status=2
+       service=$ceph_out
     else
        status=1
     fi
@@ -59,6 +63,10 @@ if [ $status == "0" ]
 then
     echo "OK: service $service is working"
     exit 0
+elif [ $status == "2" ]
+then
+    echo "Warning: $service"
+    exit 1
 elif [ $status == "1" ]
 then
     echo "Critical: something went wrong! Service $service is not working"

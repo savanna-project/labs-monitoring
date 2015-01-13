@@ -1,1 +1,5 @@
 TODO
+client/site.pp
+deploy-*
+monitor/site.pp
+puppet-logs

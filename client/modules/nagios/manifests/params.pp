@@ -10,7 +10,7 @@ class nagios::params {
           $nrpe_package_name = 'nagios-nrpe-server'
           $nagios_plugins_name = 'nagios-plugins'
           $plugins_dir = '/usr/lib/nagios/plugins'
-          $url = '/'
+          $url = '/horizon'
         }
     default: {
       fail("Unsupported osfamily: ${::osfamily} The 'nagios-client' module only supports osfamily Debian or RedHat (slaves only).")

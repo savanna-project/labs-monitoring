@@ -3,6 +3,7 @@ class nagios::creds (
   $os_auth_url="",
   $os_password="",
   $os_tenant_name="",
+  $ceph_auth="",
 ) inherits params {
   file { "${plugins_dir}/check_openstack":
     mode    => '0755',
